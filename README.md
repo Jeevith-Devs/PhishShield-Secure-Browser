@@ -86,6 +86,27 @@ $$\mathbf{DETECT} \longrightarrow \mathbf{ASSESS} \longrightarrow \mathbf{ADAPT}
 | **61 – 80** | **HIGH** | **Controlled Investigation:** Standard navigation blocked. | One-click launch into ephemeral container with synthetic form autofill. |
 | **81 – 100** | **CRITICAL** | **Isolated Sandboxing:** Direct local access prohibited. | Executes in isolated headless container; stream telemetry to SOC dashboard. |
 
+## PhishShield Modules
+
+PhishShield is designed around the following 16 modules:
+
+1. **Browser Extension Module:** Detects website navigation and displays warnings, risk levels, and security explanations to users.
+2. **URL Analysis Module:** Examines URL length, suspicious characters, subdomains, keywords, URL structure, and typosquatting patterns.
+3. **Domain Intelligence Module:** Analyzes domain age, DNS information, IP reputation, certificates, and domain reputation.
+4. **Threat Intelligence Module:** Checks configured threat-intelligence sources, such as VirusTotal and URLhaus, for known malicious indicators.
+5. **Website Analysis Module:** Examines login forms, password fields, redirects, scripts, iframes, and suspicious form submissions.
+6. **AI/ML Detection Module:** Uses machine-learning or deep-learning models to classify websites and estimate phishing risk.
+7. **Brand Impersonation Module:** Detects lookalike domains, character substitutions, typosquatting, and attempts to imitate legitimate brands.
+8. **Threat Intent Detection Module:** Estimates what the attacker may be trying to do, such as steal credentials, collect payment information, distribute malware, or extract personal data.
+9. **Risk Scoring Module:** Combines available security signals into a numerical risk score and severity level.
+10. **Explainable AI Module:** Explains why a website is suspicious by presenting the relevant detection indicators instead of only showing a warning.
+11. **Adaptive Defense Module:** Selects the appropriate action based on risk: allow, warn, block, stop a redirect, or initiate another protective response.
+12. **Sensitive Data Protection Module:** Aims to prevent passwords, payment details, and other sensitive information from being submitted to suspicious destinations.
+13. **Controlled Browsing / Isolation Module:** Provides a restricted environment for authorized inspection of suspicious websites, with controls on downloads and browser access.
+14. **Security Dashboard Module:** Displays analyzed URLs, detected threats, risk distribution, recent incidents, alerts, and security trends.
+15. **Security Report Module:** Generates a record containing the analyzed URL, threat type, risk score, evidence, timestamp, and recommended action.
+16. **Admin / SOC Module:** Enables authorized security administrators to investigate incidents, search domains, review reports, and configure security policies.
+
 ---
 
 ## Repository Structure

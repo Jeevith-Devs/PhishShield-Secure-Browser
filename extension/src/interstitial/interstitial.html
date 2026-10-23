@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishShield — Security Warning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #060911;
+      --surface: #0d1117;
+      --border: #21262d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --low: #22c55e;
+      --medium: #f59e0b;
+      --high: #f97316;
+      --critical: #ef4444;
+      --accent: #58a6ff;
+    }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    /* Animated scanline background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.013) 2px,
+        rgba(255,255,255,0.013) 4px
+      );
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%; max-width: 640px;
+      position: relative; z-index: 1;
+    }
+
+    /* Top warning banner */
+    .warning-banner {
+      padding: 6px 18px;
+      border-radius: 8px 8px 0 0;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      text-align: center; text-transform: uppercase;
+    }
+    .banner-MEDIUM   { background: var(--medium); color: #000; }
+    .banner-HIGH     { background: var(--high);   color: #fff; }
+    .banner-CRITICAL { background: var(--critical); color: #fff; }
+
+    /* Main card */
+    .card {
+      background: var(--surface);
+      border: 1px solid;
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      padding: 32px;
+      position: relative; overflow: hidden;
+    }
+    .card-MEDIUM   { border-color: var(--medium); }
+    .card-HIGH     { border-color: var(--high); }
+    .card-CRITICAL { border-color: var(--critical); }
+
+    /* Glowing corner accent */
+    .card::before {
+      content: ''; position: absolute;
+      top: -80px; right: -80px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      opacity: 0.07;
+    }
+    .card-MEDIUM::before   { background: var(--medium); }
+    .card-HIGH::before     { background: var(--high); }
+    .card-CRITICAL::before { background: var(--critical); }
+
+    /* Logo row */
+    .logo-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 24px;
+    }
+    .logo {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #58a6ff, #7c3aed);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: white;
+    }
+    .logo-text { font-size: 18px; font-weight: 700; }
+    .logo-sub  { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* Icon + headline */
+    .threat-icon {
+      font-size: 52px; text-align: center; margin-bottom: 16px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    h1 {
+      font-size: 22px; font-weight: 800;
+      text-align: center; margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .subtitle { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 24px; }
+
+    /* Risk meter */
+    .risk-meter {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    .risk-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .risk-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .risk-score-big { font-size: 32px; font-weight: 800; }
+    .score-MEDIUM   { color: var(--medium); }
+    .score-HIGH     { color: var(--high); }
+    .score-CRITICAL { color: var(--critical); }
+
+    .bar-wrap { background: var(--border); height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+    .fill-MEDIUM   { background: linear-gradient(90deg, var(--medium), #f97316); }
+    .fill-HIGH     { background: linear-gradient(90deg, var(--high), var(--critical)); }
+    .fill-CRITICAL { background: linear-gradient(90deg, var(--critical), #9f1239); }
+
+    .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+    .meta-chip {
+      font-size: 10px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); color: var(--muted);
+    }
+
+    /* URL box */
+    .url-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 12px; color: var(--muted);
+      word-break: break-all; line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .url-box span { color: var(--critical); font-weight: 600; }
+
+    /* Indicators */
+    .indicators { margin-bottom: 24px; }
+    .ind-title { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .ind-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-size: 12px; color: var(--muted); line-height: 1.5;
+    }
+    .ind-item:last-child { border: none; }
+    .ind-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--high); flex-shrink: 0; margin-top: 5px; }
+
+    /* Buttons */
+    .btn-row { display: flex; flex-direction: column; gap: 10px; }
+    .btn {
+      width: 100%; padding: 13px 20px;
+      border-radius: 10px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 700;
+      transition: all 0.2s; letter-spacing: 0.2px;
+    }
+    .btn-sandbox {
+      background: linear-gradient(135deg, #58a6ff, #7c3aed);
+      color: white; box-shadow: 0 4px 20px rgba(88,166,255,0.3);
+    }
+    .btn-sandbox:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(88,166,255,0.4); }
+    .btn-back {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); color: var(--muted);
+    }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-proceed {
+      background: transparent;
+      border: 1px solid var(--critical); color: var(--critical);
+      font-size: 12px; padding: 9px;
+    }
+    .btn-proceed:hover { background: rgba(239,68,68,.08); }
+
+    /* Footer */
+    .interstitial-footer {
+      text-align: center; margin-top: 20px;
+      font-size: 11px; color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="warning-banner" id="warning-banner">⚠ Security Warning</div>
+    <div class="card" id="main-card">
+
+      <div class="logo-row">
+        <div class="logo">PS</div>
+        <div>
+          <div class="logo-text">PhishShield</div>
+          <div class="logo-sub">Cyber Threat Interstitial</div>
+        </div>
+      </div>
+
+      <div class="threat-icon" id="threat-icon">⚠️</div>
+      <h1 id="main-headline">Suspicious Site Detected</h1>
+      <p class="subtitle" id="main-subtitle">PhishShield has identified potential threats. Proceed with extreme caution.</p>
+
+      <div class="risk-meter">
+        <div class="risk-row">
+          <span class="risk-label">Risk Score</span>
+          <span class="risk-score-big" id="score-display">—</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+        <div class="meta-row" id="meta-row"></div>
+      </div>
+
+      <div class="url-box" id="url-box">Target URL: —</div>
+
+      <div class="indicators">
+        <div class="ind-title">Threat Indicators</div>
+        <div id="indicators-list"></div>
+      </div>
+
+      <div class="btn-row" id="btn-row"></div>
+
+      <div class="interstitial-footer">
+        Analysis by PhishShield · Scan ID: <span id="scan-id-display">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get("url") || "Unknown URL";
+    const riskScore = parseFloat(params.get("risk_score") || "0");
+    const threatLevel = params.get("threat_level") || "MEDIUM";
+    const adaptiveAction = params.get("adaptive_action") || "WARN";
+    const scanId = params.get("scan_id") || "—";
+
+    const HEADLINES = {
+      MEDIUM: "Suspicious Website Detected",
+      HIGH: "High-Risk Phishing Threat Blocked",
+      CRITICAL: "Critical Threat — Navigation Blocked",
+    };
+    const SUBTITLES = {
+      MEDIUM: "This URL exhibits characteristics associated with phishing. Verify before proceeding.",
+      HIGH: "Strong indicators of credential harvesting or brand impersonation detected.",
+      CRITICAL: "Confirmed threat infrastructure. Direct navigation is prohibited for your safety.",
+    };
+    const ICONS = { MEDIUM: "⚠️", HIGH: "🚨", CRITICAL: "🛑" };
+
+    // Apply theme
+    document.getElementById("warning-banner").className = `warning-banner banner-${threatLevel}`;
+    document.getElementById("main-card").className = `card card-${threatLevel}`;
+    document.getElementById("threat-icon").textContent = ICONS[threatLevel] || "⚠️";
+    document.getElementById("main-headline").textContent = HEADLINES[threatLevel] || "Suspicious Site";
+    document.getElementById("main-subtitle").textContent = SUBTITLES[threatLevel] || "";
+
+    const scoreEl = document.getElementById("score-display");
+    scoreEl.textContent = Math.round(riskScore);
+    scoreEl.className = `risk-score-big score-${threatLevel}`;
+
+    const fill = document.getElementById("bar-fill");
+    fill.style.width = `${Math.round(riskScore)}%`;
+    fill.className = `bar-fill fill-${threatLevel}`;
+
+    document.getElementById("url-box").innerHTML =
+      `Target URL: <span>${url.length > 80 ? url.slice(0, 80) + "…" : url}</span>`;
+
+    document.getElementById("scan-id-display").textContent = scanId;
+
+    // Meta chips
+    const metaRow = document.getElementById("meta-row");
+    [threatLevel, adaptiveAction, `Score: ${Math.round(riskScore)}/100`].forEach((label) => {
+      const chip = document.createElement("span");
+      chip.className = "meta-chip";
+      chip.textContent = label;
+      metaRow.appendChild(chip);
+    });
+
+    // Indicators (fetch from history or show defaults)
+    const indicatorsList = document.getElementById("indicators-list");
+    const defaultIndicators = {
+      MEDIUM: ["Elevated URL entropy detected.", "Suspicious keywords found in URL path.", "Verify the domain ownership before proceeding."],
+      HIGH: ["Brand name detected in subdomain structure.", "High-risk TLD associated with phishing campaigns.", "Routing to investigation sandbox is recommended."],
+      CRITICAL: ["Confirmed critical threat indicators.", "Direct navigation strictly blocked.", "Isolated sandbox session required for safe analysis."],
+    };
+    (defaultIndicators[threatLevel] || []).forEach((ind) => {
+      const div = document.createElement("div");
+      div.className = "ind-item";
+      div.innerHTML = `<div class="ind-dot"></div><span>${ind}</span>`;
+      indicatorsList.appendChild(div);
+    });
+
+    // Buttons
+    const btnRow = document.getElementById("btn-row");
+    if (threatLevel === "MEDIUM") {
+      btnRow.innerHTML = `
+        <button class="btn btn-back" onclick="history.back()">← Go Back to Safety</button>
+        <button class="btn btn-proceed" onclick="proceedAnyway()">I understand the risk — proceed anyway</button>
+      `;
+    } else if (threatLevel === "HIGH") {
+      btnRow.innerHTML = `
+        <button class="btn btn-sandbox" onclick="launchSandbox()">🔬 Investigate in Secure Sandbox</button>
+        <button class="btn btn-back" onclick="history.back()">← Go Back to Safety</button>
+      `;
+    } else if (threatLevel === "CRITICAL") {
+      btnRow.innerHTML = `
+        <button class="btn btn-sandbox" onclick="launchSandbox()">🛡 Route to Isolated Sandbox</button>
+        <button class="btn btn-back" onclick="history.back()">← Go Back to Safety</button>
+      `;
+    }
+
+    function proceedAnyway() {
+      if (confirm("Are you sure? This site has been flagged as suspicious by PhishShield.")) {
+        window.location.href = url;
+      }
+    }
+
+    function launchSandbox() {
+      chrome.runtime.sendMessage(
+        { type: "LAUNCH_SANDBOX", url, threat_level: threatLevel },
+        (resp) => {
+          if (resp?.session) {
+            window.location.href = `http://localhost:3000/sandbox/${resp.session.session_id}`;
+          } else {
+            alert("Failed to launch sandbox. Ensure the PhishShield API is running.");
+          }
+        }
+      );
+    }
+  </script>
+</body>
+</html>

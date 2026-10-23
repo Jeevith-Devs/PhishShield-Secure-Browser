@@ -1,0 +1,9 @@
+{
+  "name": "phishshield-secure-browser",
+  "version": "1.0.0",
+  "description": "PhishShield Hardened Dedicated Secure Browser for Threat Analysts and Incident Responders",
+  "main": "src/main.js",
+  "scripts": {
+    "start": ".\\electron-bin\\electron.exe ."
+  }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PhishShield Secure Browser</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top Navigation & Security Header -->
+  <header id="browser-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-badge">PS</div>
+        <span class="brand-title">PhishShield Secure Browser</span>
+        <span class="security-chip green">● Memory-Isolated Session</span>
+        <span class="security-chip blue">🛡️ WebRTC Leak Protection</span>
+      </div>
+      <div class="window-controls">
+        <span class="version-tag">Hardened Chromium Client v1.0</span>
+      </div>
+    </div>
+
+    <!-- Navigation & Omnibar -->
+    <div class="nav-bar">
+      <div class="nav-buttons">
+        <button id="btn-back" class="nav-btn" title="Back">◂</button>
+        <button id="btn-forward" class="nav-btn" title="Forward">▸</button>
+        <button id="btn-reload" class="nav-btn" title="Reload">↻</button>
+        <button id="btn-home" class="nav-btn" title="Home">⌂</button>
+      </div>
+
+      <!-- Omnibar -->
+      <form id="url-form" class="omnibar-container">
+        <div id="security-icon" class="security-icon">🛡️</div>
+        <input
+          id="url-input"
+          type="text"
+          placeholder="Enter safe or suspicious URL to inspect (e.g. google.com, paypal-verify.xyz)…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div id="risk-pill" class="risk-pill low">
+          <span id="risk-score-val">0</span>
+          <span id="risk-level-val">LOW</span>
+        </div>
+      </form>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button id="btn-sandbox" class="action-btn purple" title="Isolate current page in ephemeral container with synthetic data injection">
+          🚀 Isolate (SDI)
+        </button>
+        <button id="btn-report" class="action-btn blue" title="Generate Evidence-Grounded AI Security Analyst Report">
+          🤖 AI Report
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Webview Container -->
+  <main id="browser-viewport">
+    <webview
+      id="webview"
+      src="https://www.google.com"
+      partition="persist:memory-isolated"
+      allowpopups="false"
+    ></webview>
+
+    <!-- Warning Interstitial Barrier Overlay -->
+    <div id="warning-gate" class="barrier-overlay hidden">
+      <div class="barrier-card">
+        <div class="barrier-header">
+          <div class="barrier-icon">⚠️</div>
+          <div>
+            <h2 id="barrier-title">High-Risk Destination Detected</h2>
+            <div id="barrier-url" class="barrier-url"></div>
+          </div>
+        </div>
+
+        <div class="barrier-body">
+          <div class="barrier-score-row">
+            <div>
+              <div class="barrier-label">CALCULATED THREAT SCORE</div>
+              <div id="barrier-score" class="barrier-score-value">88 / 100</div>
+            </div>
+            <div>
+              <div class="barrier-label">THREAT LEVEL</div>
+              <div id="barrier-level" class="barrier-level-badge">CRITICAL</div>
+            </div>
+            <div>
+              <div class="barrier-label">ADAPTIVE ENFORCEMENT</div>
+              <div id="barrier-action" class="barrier-action-badge">ISOLATE</div>
+            </div>
+          </div>
+
+          <div class="barrier-reasons">
+            <div class="barrier-label">DETECTION SIGNALS</div>
+            <ul id="barrier-reasons-list"></ul>
+          </div>
+
+          <div class="barrier-recommendation">
+            🛡️ <strong>Recommended Safe Action:</strong> Open in PhishShield Ephemeral Sandbox with Synthetic Data Injection (SDI). Zero real credentials or IP addresses will be exposed.
+          </div>
+        </div>
+
+        <div class="barrier-footer">
+          <button id="barrier-btn-sandbox" class="barrier-btn primary">
+            🚀 Safe Investigation in Sandbox (SDI)
+          </button>
+          <button id="barrier-btn-bypass" class="barrier-btn secondary">
+            Proceed at Own Risk
+          </button>
+          <button id="barrier-btn-back" class="barrier-btn neutral">
+            ◂ Return to Safety
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Analyst Report Drawer -->
+    <div id="report-drawer" class="drawer hidden">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span>🤖</span> AI Security Analyst Report
+        </div>
+        <button id="btn-close-drawer" class="drawer-close">✕</button>
+      </div>
+      <div id="drawer-content" class="drawer-content">
+        <div class="drawer-empty">Click "AI Report" after scanning a page.</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

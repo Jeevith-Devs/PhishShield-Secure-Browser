@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --low: #22c55e;
+      --medium: #f59e0b;
+      --high: #f97316;
+      --critical: #ef4444;
+      --accent: #58a6ff;
+    }
+
+    body {
+      width: 360px;
+      min-height: 200px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #58a6ff 0%, #7c3aed 100%);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: white; letter-spacing: -0.5px;
+    }
+    .header-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .header-sub { font-size: 11px; color: var(--muted); }
+    .rescan-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all .2s;
+    }
+    .rescan-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Loading ── */
+    #loading-state { padding: 32px 16px; text-align: center; color: var(--muted); }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Verdict Card ── */
+    #verdict-state { display: none; padding: 14px 16px; }
+    .url-row {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    .risk-card {
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+    }
+    .risk-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0.08;
+    }
+    .risk-card.LOW    { border-color: var(--low);      background: rgba(34,197,94,.06); }
+    .risk-card.MEDIUM { border-color: var(--medium);   background: rgba(245,158,11,.06); }
+    .risk-card.HIGH   { border-color: var(--high);     background: rgba(249,115,22,.06); }
+    .risk-card.CRITICAL { border-color: var(--critical); background: rgba(239,68,68,.08); }
+
+    .risk-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .threat-badge {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .badge-LOW      { background: rgba(34,197,94,.15);  color: var(--low); }
+    .badge-MEDIUM   { background: rgba(245,158,11,.15); color: var(--medium); }
+    .badge-HIGH     { background: rgba(249,115,22,.15); color: var(--high); }
+    .badge-CRITICAL { background: rgba(239,68,68,.15);  color: var(--critical); }
+
+    .score-display { font-size: 28px; font-weight: 700; }
+    .score-LOW    { color: var(--low); }
+    .score-MEDIUM { color: var(--medium); }
+    .score-HIGH   { color: var(--high); }
+    .score-CRITICAL { color: var(--critical); }
+
+    .score-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    /* Score bar */
+    .score-bar-wrap { margin: 8px 0; }
+    .score-bar {
+      height: 4px; border-radius: 2px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+    .fill-LOW    { background: var(--low); }
+    .fill-MEDIUM { background: var(--medium); }
+    .fill-HIGH   { background: var(--high); }
+    .fill-CRITICAL { background: var(--critical); }
+
+    /* Action row */
+    .action-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 10px;
+    }
+    .action-pill {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .confidence-text { font-size: 10px; color: var(--muted); margin-left: auto; }
+
+    /* Reasons */
+    .reasons-list { margin-bottom: 12px; }
+    .reason-item {
+      display: flex; align-items: flex-start; gap: 6px;
+      font-size: 11px; color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .reason-item:last-child { border-bottom: none; }
+    .reason-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--high); margin-top: 5px; flex-shrink: 0; }
+
+    /* CTA Buttons */
+    .action-btns { display: flex; flex-direction: column; gap: 8px; }
+    .btn {
+      width: 100%; padding: 9px 14px;
+      border-radius: 8px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 600;
+      transition: all 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #58a6ff, #7c3aed);
+      color: white;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger {
+      background: rgba(239,68,68,.1);
+      border: 1px solid var(--critical);
+      color: var(--critical);
+    }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+
+    /* Footer */
+    .footer {
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-link {
+      font-size: 10px; color: var(--muted); text-decoration: none;
+      cursor: pointer;
+    }
+    .footer-link:hover { color: var(--accent); }
+
+    /* Error state */
+    #error-state { display: none; padding: 20px 16px; text-align: center; }
+    .error-icon { font-size: 28px; margin-bottom: 8px; }
+    .error-msg { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">PS</div>
+    <div>
+      <div class="header-title">PhishShield</div>
+      <div class="header-sub">Threat Detection Active</div>
+    </div>
+    <button class="rescan-btn" id="rescan-btn">↺ Rescan</button>
+  </div>
+
+  <div id="loading-state">
+    <div class="spinner"></div>
+    <div>Analyzing URL…</div>
+  </div>
+
+  <div id="verdict-state">
+    <div class="url-row" id="url-display"></div>
+
+    <div class="risk-card" id="risk-card">
+      <div class="risk-top">
+        <div>
+          <div class="score-display" id="score-val">—</div>
+          <div class="score-label">Risk Score / 100</div>
+        </div>
+        <div>
+          <div class="threat-badge" id="threat-badge">—</div>
+        </div>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar"><div class="score-bar-fill" id="score-fill" style="width:0%"></div></div>
+      </div>
+      <div class="action-row">
+        <span class="action-pill" id="action-pill">—</span>
+        <span class="confidence-text" id="confidence-text"></span>
+      </div>
+    </div>
+
+    <div class="reasons-list" id="reasons-list"></div>
+
+    <div class="action-btns" id="action-btns"></div>
+  </div>
+
+  <div id="error-state">
+    <div class="error-icon">⚠</div>
+    <div class="error-msg" id="error-msg">Unable to reach PhishShield API.</div>
+    <br />
+    <button class="btn btn-secondary" id="retry-btn" style="width:auto;padding:6px 16px;margin:0 auto;display:block;">Retry</button>
+  </div>
+
+  <div class="footer">
+    <span class="footer-link" id="open-dashboard">Open Dashboard</span>
+    <span class="footer-link" id="view-history">Scan History</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

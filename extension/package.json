@@ -1,0 +1,13 @@
+{
+  "name": "phishshield-extension",
+  "version": "1.0.0",
+  "description": "PhishShield Manifest V3 Browser Extension build toolchain",
+  "scripts": {
+    "build": "npx esbuild src/background/service_worker.js --bundle --outfile=dist/background/service_worker.js --format=esm --platform=browser",
+    "watch": "npx esbuild src/background/service_worker.js --bundle --outfile=dist/background/service_worker.js --format=esm --platform=browser --watch",
+    "copy-assets": "xcopy /E /I /Y src\\popup dist\\popup && xcopy /E /I /Y src\\interstitial dist\\interstitial"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  }
+}
