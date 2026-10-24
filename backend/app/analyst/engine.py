@@ -195,6 +195,15 @@ class AnalystEngine:
                 ],
                 confidence="MEDIUM",
             ))
+        if not inferred and (context.threat_level in ("MEDIUM", "HIGH", "CRITICAL") or context.risk_score >= 30):
+            inferred.append(InferredConclusion(
+                hypothesis="Target exhibits statistical and infrastructural indicators of a deceptive or phishing lure.",
+                supporting_facts=[
+                    f"Overall risk score: {context.risk_score}/100",
+                    f"Threat level classification: {context.threat_level}",
+                ],
+                confidence="HIGH" if context.risk_score > 60 else "MEDIUM",
+            ))
 
         # Build UNKNOWN gaps
         unknown.append(UnknownGap(

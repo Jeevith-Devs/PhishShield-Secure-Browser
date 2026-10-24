@@ -12,7 +12,10 @@ const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 
-const ARTIFACT_DIR = path.resolve('C:\\Users\\Admin\\.gemini\\antigravity-ide\\brain\\040b3338-9dbe-4516-a33c-68a5c26f7555');
+const ARTIFACT_DIR = path.resolve('C:\\Users\\Admin\\.gemini\\antigravity-ide\\brain\\1cac5cd2-fddf-4218-a6b5-2ac7bc71bfa7');
+if (!fs.existsSync(ARTIFACT_DIR)) {
+  fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
+}
 
 async function runTestSuite() {
   console.log('===============================================================');
@@ -137,7 +140,8 @@ async function runTestSuite() {
     const page = await context.newPage();
 
     console.log('  Navigating to SOC Platform at http://localhost:3000...');
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2000);
     assert(await page.title() !== '', 'Platform dashboard loaded successfully');
 
     // Screenshot 1: Overview

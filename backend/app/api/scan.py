@@ -81,9 +81,44 @@ def _run_scan(url: str, client_type: str, session_id: Optional[str] = None) -> R
         ml_prob = _compute_heuristic_prob(features)
         model_name = "Heuristic (fallback)"
 
+    # Compute multidimensional risk dimensions from verified indicators
+    dom_score = 0.0
+    if features.get("is_high_risk_tld"):
+        dom_score += 40.0
+    if features.get("has_brand_in_subdomain"):
+        dom_score += 50.0
+    if features.get("has_punycode"):
+        dom_score += 30.0
+    if features.get("subdomain_count", 0) >= 3:
+        dom_score += 20.0
+    dom_score = min(100.0, dom_score)
+
+    inf_score = 0.0
+    if features.get("is_ip_address"):
+        inf_score += 85.0
+    if features.get("at_count", 0) > 0:
+        inf_score += 40.0
+    if features.get("has_double_slash_in_path"):
+        inf_score += 30.0
+    inf_score = min(100.0, inf_score)
+
+    beh_score = 0.0
+    if features.get("has_suspicious_keyword"):
+        beh_score = min(100.0, 30.0 * features.get("keyword_count", 1))
+
+    ti_score = 0.0
+    if dom_score >= 50.0 or inf_score >= 50.0:
+        ti_score = 75.0
+    if features.get("is_high_risk_tld") and (features.get("has_brand_in_subdomain") or features.get("has_suspicious_keyword")):
+        ti_score = 90.0
+
     evaluation = risk_engine.evaluate(
         url=url,
         ml_probability=ml_prob,
+        domain_risk_score=dom_score,
+        infrastructure_risk_score=inf_score,
+        behavior_risk_score=beh_score,
+        threat_intel_score=ti_score,
         features=features,
     )
     scan_id = str(uuid.uuid4())
