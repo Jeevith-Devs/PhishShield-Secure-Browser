@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PhishShield Secure Browser</title>
+  <link rel="icon" type="image/png" href="assets/phishshield-mark.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -10,48 +11,122 @@
   <header id="browser-header">
     <div class="header-top">
       <div class="brand">
-        <div class="brand-badge">PS</div>
-        <span class="brand-title">PhishShield Secure Browser</span>
-        <span class="security-chip green">● Memory-Isolated Session</span>
-        <span class="security-chip blue">🛡️ WebRTC Leak Protection</span>
+        <img class="brand-badge" src="assets/phishshield-mark.png" alt="" aria-hidden="true">
+        <div class="brand-copy">
+          <span class="brand-title">PhishShield</span>
+          <span class="brand-product">SECURE BROWSER</span>
+        </div>
+        <span class="header-divider" aria-hidden="true"></span>
+        <span class="security-chip green">Isolated session</span>
+        <span class="security-chip blue">Leak protection</span>
+        <button id="btn-gps-toggle" class="security-chip purple" style="cursor: pointer; border: 1px solid rgba(168,85,247,0.5); background: rgba(168,85,247,0.15); display: inline-flex; align-items: center; gap: 6px; color: #c084fc; font-size: 11px; font-weight: 600;" title="Toggle 5-Second GPS Location Scrambler ON/OFF">
+          <span id="gps-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 6px #a855f7;"></span>
+          <span id="gps-text">📍 Zurich ⏱️ 5s</span>
+        </button>
       </div>
       <div class="window-controls">
-        <span class="version-tag">Hardened Chromium Client v1.0</span>
+        <span class="version-tag"><span class="status-dot"></span> Protection active</span>
       </div>
     </div>
 
     <!-- Navigation & Omnibar -->
     <div class="nav-bar">
       <div class="nav-buttons">
-        <button id="btn-back" class="nav-btn" title="Back">◂</button>
-        <button id="btn-forward" class="nav-btn" title="Forward">▸</button>
-        <button id="btn-reload" class="nav-btn" title="Reload">↻</button>
-        <button id="btn-home" class="nav-btn" title="Home">⌂</button>
+        <button id="btn-back" class="nav-btn" title="Back" aria-label="Back">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.8 4.5-5.5 5.5 5.5 5.5M6.7 10h8" /></svg>
+        </button>
+        <button id="btn-forward" class="nav-btn" title="Forward" aria-label="Forward">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8.2 4.5 5.5 5.5-5.5 5.5m5.1-5.5h-8" /></svg>
+        </button>
+        <button id="btn-reload" class="nav-btn" title="Reload" aria-label="Reload">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 8a6 6 0 0 0-10.6-2L4 7.5M4 4.5v3h3M4 12a6 6 0 0 0 10.6 2L16 12.5m0 3v-3h-3" /></svg>
+        </button>
+        <button id="btn-home" class="nav-btn home-btn" title="Home" aria-label="Home">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3.5 9 6.5-5.5L16.5 9v7H12v-4H8v4H3.5V9Z" /></svg>
+        </button>
       </div>
 
       <!-- Omnibar -->
       <form id="url-form" class="omnibar-container">
-        <div id="security-icon" class="security-icon">🛡️</div>
+        <div id="security-icon" class="security-icon" aria-label="Connection security">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 16 5v4c0 4-2.5 6.6-6 8-3.5-1.4-6-4-6-8V5l6-2.5Z" /><path d="m7.5 9.8 1.7 1.7 3.4-3.6" /></svg>
+        </div>
         <input
           id="url-input"
           type="text"
-          placeholder="Enter safe or suspicious URL to inspect (e.g. google.com, paypal-verify.xyz)…"
+          placeholder="Search with Brave Search or enter a URL"
           autocomplete="off"
           spellcheck="false"
+          aria-label="Search or enter a website address"
         />
         <div id="risk-pill" class="risk-pill low">
+          <span class="risk-indicator" aria-hidden="true"></span>
           <span id="risk-score-val">0</span>
           <span id="risk-level-val">LOW</span>
         </div>
       </form>
 
+      <!-- Search Engine Picker -->
+      <div id="engine-picker-wrapper" class="engine-picker-wrapper">
+        <button id="engine-picker-btn" class="engine-picker-btn" title="Change default search engine" aria-haspopup="true" aria-expanded="false">
+          <span id="engine-favicon" class="engine-favicon" aria-hidden="true">BR</span>
+          <span id="engine-name-short" class="engine-name-short">Brave</span>
+          <svg class="engine-caret" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </button>
+        <div id="engine-dropdown" class="engine-dropdown hidden" role="listbox" aria-label="Search engine options">
+          <div class="engine-dropdown-header">Default Search Engine</div>
+          <button class="engine-option active" data-engine="brave" role="option">
+            <span class="engine-opt-icon" aria-hidden="true">BR</span>
+            <div class="engine-opt-info">
+              <span class="engine-opt-name">Brave Search</span>
+              <span class="engine-opt-desc">Private · No tracking · Independent index</span>
+            </div>
+            <span class="engine-opt-check">✓</span>
+          </button>
+          <button class="engine-option" data-engine="duckduckgo" role="option">
+            <span class="engine-opt-icon" aria-hidden="true">DD</span>
+            <div class="engine-opt-info">
+              <span class="engine-opt-name">DuckDuckGo</span>
+              <span class="engine-opt-desc">Private · No user tracking</span>
+            </div>
+            <span class="engine-opt-check hidden">✓</span>
+          </button>
+          <button class="engine-option" data-engine="startpage" role="option">
+            <span class="engine-opt-icon" aria-hidden="true">SP</span>
+            <div class="engine-opt-info">
+              <span class="engine-opt-name">Startpage</span>
+              <span class="engine-opt-desc">Private · Anonymous Google results</span>
+            </div>
+            <span class="engine-opt-check hidden">✓</span>
+          </button>
+          <button class="engine-option" data-engine="google" role="option">
+            <span class="engine-opt-icon" aria-hidden="true">G</span>
+            <div class="engine-opt-info">
+              <span class="engine-opt-name">Google</span>
+              <span class="engine-opt-desc">Most popular search engine</span>
+            </div>
+            <span class="engine-opt-check hidden">✓</span>
+          </button>
+          <button class="engine-option" data-engine="bing" role="option">
+            <span class="engine-opt-icon" aria-hidden="true">B</span>
+            <div class="engine-opt-info">
+              <span class="engine-opt-name">Bing</span>
+              <span class="engine-opt-desc">Microsoft search engine</span>
+            </div>
+            <span class="engine-opt-check hidden">✓</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
       <div class="quick-actions">
         <button id="btn-sandbox" class="action-btn purple" title="Isolate current page in ephemeral container with synthetic data injection">
-          🚀 Isolate (SDI)
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10.5 2.5c3.5 0 6 2.5 6 6-1.1 3.4-4.1 6.4-7.5 7.5l-3-3c1.1-3.4 4.1-6.4 7.5-7.5" /><path d="m6 10-2.5.5L2.5 14l3.5-.5m4 1 .5 2.5 3.5 1 1-3.5M13.5 7.5h.1" /></svg>
+          Isolate
         </button>
         <button id="btn-report" class="action-btn blue" title="Generate Evidence-Grounded AI Security Analyst Report">
-          🤖 AI Report
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.8h7l3 3V17H5V2.8Z" /><path d="M12 3v3h3M7.5 10h5M7.5 13h5" /></svg>
+          Analyst report
         </button>
       </div>
     </div>
@@ -61,16 +136,79 @@
   <main id="browser-viewport">
     <webview
       id="webview"
-      src="https://www.google.com"
+      src="about:blank"
       partition="persist:memory-isolated"
       allowpopups="false"
     ></webview>
+
+    <!-- New Tab Home Screen -->
+    <div id="new-tab-screen" class="new-tab-screen">
+      <div class="nt-session-bar">
+        <span class="nt-session-label"><span class="nt-prompt-mark">&gt;_</span> PS / SECURE SESSION</span>
+        <span class="nt-session-state"><span class="nt-dot"></span> PROTECTION ACTIVE</span>
+      </div>
+      <div class="nt-brand">
+        <div class="nt-shield">
+          <img src="assets/phishshield-mark.png" alt="" aria-hidden="true">
+        </div>
+        <h1 class="nt-title">PhishShield</h1>
+        <p class="nt-subtitle">PRIVATE BY DEFAULT. PROTECTED BY DESIGN.</p>
+      </div>
+
+      <div class="nt-search-box">
+        <div class="nt-engine-badge" id="nt-engine-badge">
+          <span id="nt-engine-favicon" class="nt-engine-favicon" aria-hidden="true">BR</span>
+          <span>SEARCH PROVIDER</span>
+          <span class="nt-engine-divider" aria-hidden="true">/</span>
+          <span id="nt-engine-label">Brave Search</span>
+        </div>
+        <form id="nt-search-form" class="nt-search-form">
+          <span class="nt-search-icon">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <input id="nt-search-input" type="text" class="nt-search-input" placeholder="Search privately with Brave Search…" autocomplete="off" spellcheck="false" />
+          <button type="submit" class="nt-search-submit" id="nt-search-btn">Search <span aria-hidden="true">↵</span></button>
+        </form>
+        <div class="nt-privacy-note">
+          <span class="nt-dot"></span>
+          <span id="nt-privacy-text">Brave Search — No tracking. No profiling. Independent web index.</span>
+        </div>
+      </div>
+
+      <div class="nt-quicklinks">
+        <div class="nt-quicklinks-heading">
+          <div class="nt-quicklinks-label">FREQUENT DESTINATIONS</div>
+          <span class="nt-quicklinks-hint">SELECT TO INSPECT</span>
+        </div>
+        <div class="nt-quicklinks-grid">
+          <button class="nt-quicklink" data-url="https://search.brave.com" title="Brave Search">
+            <span class="nt-ql-index">01</span><span class="nt-ql-icon">BR</span><span class="nt-ql-name">Brave Search</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="nt-quicklink" data-url="https://github.com" title="GitHub">
+            <span class="nt-ql-index">02</span><span class="nt-ql-icon">GH</span><span class="nt-ql-name">GitHub</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="nt-quicklink" data-url="https://wikipedia.org" title="Wikipedia">
+            <span class="nt-ql-index">03</span><span class="nt-ql-icon">W</span><span class="nt-ql-name">Wikipedia</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="nt-quicklink" data-url="https://proton.me" title="ProtonMail">
+            <span class="nt-ql-index">04</span><span class="nt-ql-icon">P</span><span class="nt-ql-name">Proton</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="nt-quicklink" data-url="https://news.ycombinator.com" title="Hacker News">
+            <span class="nt-ql-index">05</span><span class="nt-ql-icon">HN</span><span class="nt-ql-name">Hacker News</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="nt-quicklink" data-url="https://duckduckgo.com" title="DuckDuckGo">
+            <span class="nt-ql-index">06</span><span class="nt-ql-icon">DD</span><span class="nt-ql-name">DuckDuckGo</span><span class="nt-ql-arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+      <div class="nt-footer"><span>ALL DESTINATIONS ARE SCANNED BEFORE NAVIGATION</span><span>PHISHSHIELD / v1.0</span></div>
+    </div>
 
     <!-- Warning Interstitial Barrier Overlay -->
     <div id="warning-gate" class="barrier-overlay hidden">
       <div class="barrier-card">
         <div class="barrier-header">
-          <div class="barrier-icon">⚠️</div>
+          <div class="barrier-icon" aria-hidden="true">!</div>
           <div>
             <h2 id="barrier-title">High-Risk Destination Detected</h2>
             <div id="barrier-url" class="barrier-url"></div>
@@ -99,19 +237,19 @@
           </div>
 
           <div class="barrier-recommendation">
-            🛡️ <strong>Recommended Safe Action:</strong> Open in PhishShield Ephemeral Sandbox with Synthetic Data Injection (SDI). Zero real credentials or IP addresses will be exposed.
+            <strong>RECOMMENDED:</strong> Open in the isolated sandbox with synthetic data. Real credentials are not used in the sandbox session.
           </div>
         </div>
 
         <div class="barrier-footer">
           <button id="barrier-btn-sandbox" class="barrier-btn primary">
-            🚀 Safe Investigation in Sandbox (SDI)
+            Open isolated sandbox
           </button>
           <button id="barrier-btn-bypass" class="barrier-btn secondary">
             Proceed at Own Risk
           </button>
           <button id="barrier-btn-back" class="barrier-btn neutral">
-            ◂ Return to Safety
+            Back to safety
           </button>
         </div>
       </div>
@@ -121,7 +259,7 @@
     <div id="report-drawer" class="drawer hidden">
       <div class="drawer-header">
         <div class="drawer-title">
-          <span>🤖</span> AI Security Analyst Report
+          <span aria-hidden="true">[R]</span> AI Security Analyst Report
         </div>
         <button id="btn-close-drawer" class="drawer-close">✕</button>
       </div>

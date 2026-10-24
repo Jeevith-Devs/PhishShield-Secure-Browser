@@ -143,3 +143,26 @@ async def get_synthetic_data(session_id: str):
     if not sd:
         raise HTTPException(status_code=404, detail="No synthetic data profile for this session.")
     return sd
+
+
+# ─── Virtual Machine Sandbox VPN Rotation (5-Minute Cycles) ───────────────────
+
+from backend.app.sandbox.vpn_manager import vpn_manager
+
+
+@router.get("/vpn/current")
+async def get_current_vpn_status():
+    """Returns the current randomized VPN exit node, encryption status, and 5-min rotation timer."""
+    return vpn_manager.get_status()
+
+
+@router.post("/vpn/rotate")
+async def force_vpn_rotation():
+    """Forces immediate rotation to a new random privacy VPN exit node."""
+    entry = vpn_manager.rotate(reason="Analyst manual rotation trigger")
+    return {
+        "status": "rotated",
+        "new_node": entry,
+        "vpn_state": vpn_manager.get_status(),
+    }
+

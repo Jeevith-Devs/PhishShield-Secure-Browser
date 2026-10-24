@@ -135,12 +135,14 @@ export default function AnalystReportModal({ report, loading, onClose }: ModalPr
             )}
             <button
               onClick={onClose}
+              aria-label="Close"
               style={{
-                background: 'transparent', border: 'none', color: 'var(--text-muted)',
-                fontSize: '20px', cursor: 'pointer', padding: '4px 8px',
+                background: 'var(--bg-tertiary)', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: '6px 12px', borderRadius: '6px',
+                display: 'flex', alignItems: 'center', gap: '4px',
               }}
             >
-              ✕
+              Close ✕
             </button>
           </div>
         </div>

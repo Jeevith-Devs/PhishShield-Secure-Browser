@@ -34,18 +34,31 @@ interface SandboxSessionItem {
 
 interface SandboxViewProps {
   apiBase: string;
+  initialUrl?: string;
+  initialThreatLevel?: 'HIGH' | 'CRITICAL';
+  autoLaunch?: boolean;
 }
 
-export default function SandboxView({ apiBase }: SandboxViewProps) {
+export default function SandboxView({ apiBase, initialUrl, initialThreatLevel, autoLaunch }: SandboxViewProps) {
   const [sessions, setSessions] = useState<SandboxSessionItem[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [selectedTelemetry, setSelectedTelemetry] = useState<TelemetryEvent[]>([]);
   const [loadingTelemetry, setLoadingTelemetry] = useState(false);
   
-  const [targetUrl, setTargetUrl] = useState('http://paypal-verification.security-portal.xyz/login');
-  const [threatLevel, setThreatLevel] = useState<'HIGH' | 'CRITICAL'>('HIGH');
+  const safeThreat = (initialThreatLevel === 'CRITICAL') ? 'CRITICAL' : 'HIGH';
+  const [targetUrl, setTargetUrl] = useState(initialUrl || 'http://paypal-verification.security-portal.xyz/login');
+  const [threatLevel, setThreatLevel] = useState<'HIGH' | 'CRITICAL'>(safeThreat);
   const [injectSynthetic, setInjectSynthetic] = useState(true);
   const [launching, setLaunching] = useState(false);
+
+  useEffect(() => {
+    if (initialUrl) {
+      setTargetUrl(initialUrl);
+    }
+    if (initialThreatLevel) {
+      setThreatLevel(initialThreatLevel === 'CRITICAL' ? 'CRITICAL' : 'HIGH');
+    }
+  }, [initialUrl, initialThreatLevel]);
 
   const fetchSessions = useCallback(async () => {
     try {
@@ -61,6 +74,33 @@ export default function SandboxView({ apiBase }: SandboxViewProps) {
       // offline fallback
     }
   }, [apiBase, selectedSessionId]);
+
+  useEffect(() => {
+    if (autoLaunch && initialUrl) {
+      const runAuto = async () => {
+        setLaunching(true);
+        try {
+          const res = await fetch(`${apiBase}/sandbox/launch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url: initialUrl,
+              threat_level: initialThreatLevel === 'CRITICAL' ? 'CRITICAL' : 'HIGH',
+              inject_synthetic_data: true,
+            }),
+          });
+          if (res.ok) {
+            const newSession = await res.json();
+            await fetchSessions();
+            setSelectedSessionId(newSession.session_id);
+          }
+        } finally {
+          setLaunching(false);
+        }
+      };
+      runAuto();
+    }
+  }, [autoLaunch, initialUrl, initialThreatLevel, apiBase, fetchSessions]);
 
   const fetchTelemetry = useCallback(async (sessionId: string) => {
     setLoadingTelemetry(true);

@@ -48,6 +48,8 @@ export default function DashboardPage() {
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [currentReport, setCurrentReport] = useState<AnalystReportData | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
+  // Sandbox Target State
+  const [sandboxTarget, setSandboxTarget] = useState<{ url: string; threatLevel: 'HIGH' | 'CRITICAL'; autoLaunch: boolean } | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -95,6 +97,12 @@ export default function DashboardPage() {
   };
 
   const handleLaunchSandbox = (url: string, threatLevel: string) => {
+    const targetUrl = url || 'https://paypal-verification-account-auth.xyz/login';
+    setSandboxTarget({
+      url: targetUrl,
+      threatLevel: threatLevel === 'CRITICAL' ? 'CRITICAL' : 'HIGH',
+      autoLaunch: true,
+    });
     setActiveSection('sandbox');
   };
 
@@ -167,7 +175,7 @@ export default function DashboardPage() {
               />
               <StatCard
                 label="Avg Risk Score"
-                value={stats ? `${stats.average_risk_score.toFixed(1)}` : '—'}
+                value={stats && typeof stats.average_risk_score === 'number' ? stats.average_risk_score.toFixed(1) : '—'}
                 icon="📊"
                 color="var(--medium)"
               />
@@ -224,7 +232,12 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'sandbox' && (
-          <SandboxView apiBase={API} />
+          <SandboxView
+            apiBase={API}
+            initialUrl={sandboxTarget?.url}
+            initialThreatLevel={sandboxTarget?.threatLevel}
+            autoLaunch={sandboxTarget?.autoLaunch}
+          />
         )}
 
         {activeSection === 'intel' && (

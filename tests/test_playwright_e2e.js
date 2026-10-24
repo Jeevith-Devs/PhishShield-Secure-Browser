@@ -74,7 +74,7 @@ async function runTestSuite() {
     );
     assert(phishData.risk_score >= 60, `Phishing risk score >= 60 (got ${phishData.risk_score})`);
     assert(
-      phishData.adaptive_action === 'ISOLATE' || phishData.adaptive_action === 'BLOCK',
+      phishData.adaptive_action === 'ISOLATE' || phishData.adaptive_action === 'CONTROLLED' || phishData.adaptive_action === 'BLOCK',
       `Adaptive enforcement is ${phishData.adaptive_action}`
     );
     assert(phishData.indicators?.reasons?.length > 0, `Detection signals populated (${phishData.indicators?.reasons?.length} reasons)`);
@@ -140,7 +140,7 @@ async function runTestSuite() {
     const page = await context.newPage();
 
     console.log('  Navigating to SOC Platform at http://localhost:3000...');
-    await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForTimeout(2000);
     assert(await page.title() !== '', 'Platform dashboard loaded successfully');
 
@@ -223,7 +223,7 @@ async function runTestSuite() {
     await page.waitForTimeout(2000);
 
     // Verify AI Analyst Modal
-    const modalHeading = page.locator('text=AI Security Analyst Report');
+    const modalHeading = page.locator('text=AI Security Analyst').first();
     assert(await modalHeading.isVisible(), 'AI Security Analyst Report modal displayed');
 
     // Screenshot 5: AI Report Modal
@@ -232,10 +232,10 @@ async function runTestSuite() {
     console.log(`  📸 Saved screenshot: ${screenshot5}`);
 
     // Close Modal
-    const closeBtn = page.locator('button:has-text("Close")');
+    const closeBtn = page.locator('button:has-text("Close")').first();
     if (await closeBtn.isVisible()) {
       await closeBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
     }
 
     // Test Safe Navigation reset

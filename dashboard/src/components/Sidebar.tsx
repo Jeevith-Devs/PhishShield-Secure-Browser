@@ -30,22 +30,22 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
       alignSelf: 'flex-start',
       height: '100vh',
     }}>
-      {/* Logo */}
       <div style={{
         padding: '20px 18px 16px',
         borderBottom: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-          <div style={{
-            width: '32px', height: '32px',
-            background: 'linear-gradient(135deg, #58a6ff, #7c3aed)',
-            borderRadius: '8px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px', fontWeight: 800, color: 'white',
-            flexShrink: 0,
-          }}>
-            PS
-          </div>
+          <img
+            src="/phishshield-mark.png"
+            alt=""
+            aria-hidden="true"
+            style={{
+              width: '32px',
+              height: '32px',
+              objectFit: 'contain',
+              flexShrink: 0,
+            }}
+          />
           <div>
             <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
               PhishShield

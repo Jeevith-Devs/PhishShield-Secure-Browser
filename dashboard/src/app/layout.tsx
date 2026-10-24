@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: 'PhishShield SOC Dashboard',
   description: 'Enterprise Security Operations Center — Cyber Threat Detection, Risk Analytics & Investigation Platform',
   keywords: ['phishing', 'cybersecurity', 'threat intelligence', 'SOC', 'browser security'],
+  icons: {
+    icon: '/phishshield-mark.png',
+    shortcut: '/phishshield-mark.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

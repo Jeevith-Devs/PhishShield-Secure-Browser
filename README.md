@@ -1,5 +1,7 @@
 # PhishShield: Cyber Threat Detection & Risk-Adaptive Secure Browsing Platform
 
+<img src="dashboard/public/phishshield-mark.png" alt="PhishShield logo" width="84" align="right">
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Security: Defensive](https://img.shields.io/badge/Security-Defensive%20Charter-green.svg)](docs/SECURITY_AND_GOVERNANCE.md)
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)

@@ -63,6 +63,7 @@ function createWindow() {
     minHeight: 700,
     title: 'PhishShield Secure Browser',
     backgroundColor: '#0a0d14',
+    icon: path.join(__dirname, 'assets', 'phishshield-icon.png'),
     show: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

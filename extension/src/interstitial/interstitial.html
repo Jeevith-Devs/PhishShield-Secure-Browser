@@ -90,10 +90,9 @@
     }
     .logo {
       width: 40px; height: 40px;
-      background: linear-gradient(135deg, #58a6ff, #7c3aed);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 800; color: white;
+      border-radius: 6px;
+      object-fit: contain;
+      flex-shrink: 0;
     }
     .logo-text { font-size: 18px; font-weight: 700; }
     .logo-sub  { font-size: 12px; color: var(--muted); margin-top: 1px; }
@@ -204,7 +203,7 @@
     <div class="card" id="main-card">
 
       <div class="logo-row">
-        <div class="logo">PS</div>
+        <img class="logo" src="../../icons/icon48.png" alt="PhishShield" />
         <div>
           <div class="logo-text">PhishShield</div>
           <div class="logo-sub">Cyber Threat Interstitial</div>
